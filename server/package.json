@@ -1,0 +1,11 @@
+{
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "1.2.20"
+  },
+  "scripts": {
+    "format": "bunx prettier --write .",
+    "start": "bun run tools/start.ts"
+  },
+  "type": "module"
+}
