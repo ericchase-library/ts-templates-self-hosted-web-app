@@ -1,11 +1,22 @@
 (() => {
 
+// src/lib/ericchase/Core_Console_Error.ts
+function Core_Console_Error(...items) {
+  console["error"](...items);
+}
+
 // src/lib/server/constants.ts
-var SERVER_HOST = "127.0.0.1:8000";
+var SERVER_HOST = "127.0.0.1:54321";
 
 // src/lib/server/HotRefresh.ts
 function HotRefresh(serverhost) {
-  return new CHotRefresh(serverhost);
+  try {
+    const hotrefresh = new CHotRefresh(serverhost);
+    hotrefresh.startup();
+    return hotrefresh;
+  } catch (error) {
+    Core_Console_Error(error);
+  }
 }
 
 class CHotRefresh {
@@ -18,16 +29,16 @@ class CHotRefresh {
     onError: (event) => {
       this.cleanup();
     },
-    onMessage: (event) => {
+    onMessage: async (event) => {
       if (event.data === "reload") {
-        window.location.reload();
+        this.socket?.close();
+        setTimeout(async_reloadOnServerRestart, 100);
       }
     }
   };
   constructor(serverhost) {
     this.serverhost = serverhost;
     this.serverhost ??= SERVER_HOST;
-    this.startup();
   }
   cleanup() {
     if (this.socket) {
@@ -44,6 +55,14 @@ class CHotRefresh {
       this.socket.addEventListener("error", this.methods.onError);
       this.socket.addEventListener("message", this.methods.onMessage);
     }
+  }
+}
+async function async_reloadOnServerRestart() {
+  try {
+    await fetch("http://127.0.0.1:54321/");
+    window.location.reload();
+  } catch {
+    setTimeout(async_reloadOnServerRestart, 100);
   }
 }
 

@@ -12,5 +12,9 @@
     "resolveJsonModule": true,
     "jsx": "react-jsx"
   },
-  "include": ["./*", "./src/**/*", "./tools/**/*"]
+  "include": [
+    "./*",
+    "./src/**/*",
+    "./tools/**/*"
+  ]
 }

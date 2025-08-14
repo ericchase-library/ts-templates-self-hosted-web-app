@@ -1,0 +1,19 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 2em;
+}
+label,
+input,
+button {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 1em;
+}
+#result {
+  font-family: monospace;
+  margin-top: 1em;
+  white-space: pre-wrap;
+}
+.hidden {
+  display: none;
+}

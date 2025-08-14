@@ -4,7 +4,7 @@ function Core_Console_Error(...items) {
 }
 
 // src/lib/server/constants.ts
-var SERVER_HOST = "127.0.0.1:8000";
+var SERVER_HOST = "127.0.0.1:54321";
 
 // src/lib/database/dbdriver-localhost.ts
 function getLocalhost(address) {

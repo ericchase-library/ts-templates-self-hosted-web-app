@@ -9,7 +9,7 @@ import { Step_Bun_Run } from './core/step/Step_Bun_Run.js';
 
 Builder.SetStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
-  Step_Dev_Project_Sync_Core({ from_path: 'C:/Code/Base/JavaScript-TypeScript/Templates/Website', to_path: './' }),
+  Step_Dev_Project_Sync_Core({ from_path: 'C:/Code/Base/JavaScript-TypeScript/Templates/Self-Hosted-Web-App', to_path: './' }),
   Step_Dev_Project_Update_Config({ project_path: './' }),
   Step_Dev_Format({ showlogs: false }),
   //
