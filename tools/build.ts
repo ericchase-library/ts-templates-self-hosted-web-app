@@ -1,4 +1,5 @@
 import { BunPlatform_Args_Has } from '../src/lib/ericchase/BunPlatform_Args_Has.js';
+import { Step_Dev_Format } from './core-dev/step/Step_Dev_Format.js';
 import { Step_Dev_Project_Update_Config } from './core-dev/step/Step_Dev_Project_Update_Config.js';
 import { Processor_HTML_Custom_Component_Processor } from './core-web/processor/Processor_HTML_Custom_Component_Processor.js';
 import { Builder } from './core/Builder.js';
@@ -23,7 +24,7 @@ Builder.SetStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
   Step_FS_Clean_Directory(Builder.Dir.Out),
-  // Step_Dev_Format({ showlogs: false }),
+  Step_Dev_Format({ showlogs: false }),
   //
 );
 
