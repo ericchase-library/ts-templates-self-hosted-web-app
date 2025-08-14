@@ -34,7 +34,7 @@ class Class implements Builder.Step {
       try {
         await fetch(`http://127.0.0.1:${this.config.server_port}/websockets/reload`, { method: 'POST' });
       } catch (error) {
-        this.channel.error(error, 'Error during hotreload request.');
+        this.channel.log(`Server on port ${this.config.server_port} not yet running.`);
       }
     }
   }

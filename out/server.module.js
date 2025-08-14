@@ -217,7 +217,6 @@ class SERVER {
   }
   static async Async_GetResource(req) {
     const req_url = new URL(req.url);
-    Core_Console_Log(`${req.method}      ${req_url.pathname}`);
     const program_path = NODE_PATH.join(".");
     const request_pathobject = NodePlatform_PathObject_Relative_Class(".", decodeURIComponent(req_url.pathname));
     let resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(program_path, request_pathobject.join()));
