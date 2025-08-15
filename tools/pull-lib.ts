@@ -5,10 +5,12 @@ import { Step_FS_Mirror_Directory } from './core/step/Step_FS_Mirror_Directory.j
 
 // This script pulls template lib files from template project.
 
+const template_path = 'C:/Code/Base/JavaScript-TypeScript/Templates/Self-Hosted-Web-App';
+
 Builder.SetStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
   Step_FS_Mirror_Directory({
-    from_path: NODE_PATH.join('C:/Code/Base/JavaScript-TypeScript/Templates/Self-Hosted-Web-App', 'tools/lib-self-hosted-web-app'),
+    from_path: NODE_PATH.join(template_path, 'tools/lib-self-hosted-web-app'),
     to_path: NODE_PATH.join(Builder.Dir.Tools, 'lib-self-hosted-web-app'),
     include_patterns: ['**/*'],
   }),
