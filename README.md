@@ -9,6 +9,7 @@ This project houses the self-hosted web app template project that I use to creat
 For information about my TypeScript library and Build Tools, please visit:
 
 - https://github.com/ericchase-library/ts-library
+- https://github.com/ericchase-library/ts-templates-self-hosted-web-app
 
 ## Project Disclaimer
 
