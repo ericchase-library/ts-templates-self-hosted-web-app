@@ -1,8 +1,6 @@
 ## About
 
-https://github.com/ericchase-library/ts-templates-self-hosted-web-app
-
-This project houses the self-hosted web app template project that I use to create new website projects.
+This project houses the self-hosted web app template project that I use to create new self-hosted web app projects.
 
 ## Build Tools V4
 

@@ -8,7 +8,7 @@ const template_path = 'C:/Code/Base/JavaScript-TypeScript/Templates/Self-Hosted-
 
 Builder.SetStartUpSteps(
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
-  Step_Dev_Project_Sync_Core({ from_path: template_path, to_path: './' }),
+  Step_Dev_Project_Sync_Core({ from_path: template_path, to_path: '.' }),
   //
 );
 
