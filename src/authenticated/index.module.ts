@@ -1,10 +1,10 @@
 import { Core_Console_Error } from '../lib/ericchase/Core_Console_Error.js';
 import { Async_WebPlatform_DOM_ReadyState_Callback } from '../lib/ericchase/WebPlatform_DOM_ReadyState_Callback.js';
 import { WebPlatform_Node_Reference_Class } from '../lib/ericchase/WebPlatform_Node_Reference_Class.js';
-import { HotRefresh } from '../lib/server/HotRefresh.js';
+import { EnableHotReload } from '../lib/server/enable-hot-reload.js';
 import { Async_MutexFetch, Async_UnpairAllClientsFromServer } from '../lib/TokenAPI.js';
 
-HotRefresh();
+EnableHotReload();
 
 const button_unpair = WebPlatform_Node_Reference_Class(document.getElementById('unpair')).as(HTMLButtonElement);
 

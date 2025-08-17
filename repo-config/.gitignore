@@ -1,0 +1,2 @@
+# don't upload the auth token database
+/out/auth.db

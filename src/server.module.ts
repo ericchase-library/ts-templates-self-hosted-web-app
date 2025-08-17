@@ -8,11 +8,12 @@ import { Async_NodePlatform_Path_Is_Directory } from './lib/ericchase/NodePlatfo
 import { NodePlatform_PathObject_Relative_Class } from './lib/ericchase/NodePlatform_PathObject_Relative_Class.js';
 import { PairRequestBody } from './lib/TokenAPI.js';
 
-const PREFERRED_PORT = Number.parseInt(process.env.PORT ?? '54321');
-
-const HOMEPAGE = '/authenticated/index.html';
+const HOMEPAGE: string = '/authenticated/index.html';
 
 interface WebSocketData {}
+
+const PREFERRED_PORT: number = Number.parseInt(process.env.PORT ?? '54321');
+Bun.env.PORT = `${PREFERRED_PORT}`;
 class SERVER {
   static CreateServer(port: number): Bun.Server {
     const server = Bun.serve({
@@ -35,10 +36,12 @@ class SERVER {
             return HOOK_RES.Async_CatchInternalServerError(() => HOOK_REQ.Async_AuthenticateAccessToken(req));
           },
         },
-        '/websockets/reload': {
+        '/api/websockets/reload': {
           async POST(req, server) {
-            server.publish('ws', 'reload');
-            return RES.OK();
+            return HOOK_RES.Async_CatchInternalServerError(() => {
+              server.publish('ws', 'reload');
+              return RES.OK();
+            });
           },
         },
         '/authenticated/*': (req) => {
@@ -55,7 +58,9 @@ class SERVER {
           if (server.upgrade(req) === true) {
             return undefined;
           }
-          return HOOK_RES.Async_CatchInternalServerError(() => SERVER.Async_GetResource(req));
+          return HOOK_RES.Async_CatchInternalServerError(() => {
+            return SERVER.Async_GetResource(req);
+          });
         },
       },
       fetch() {
@@ -80,26 +85,28 @@ class SERVER {
   static async Async_GetResource(req: Request): Promise<Response> {
     const req_url = new URL(req.url);
     // Core_Console_Log(`${req.method}      ${req_url.pathname}`);
-    const program_path = NODE_PATH.join('.');
+
+    const resource_dir_path = NODE_PATH.join('.');
     const request_pathobject = NodePlatform_PathObject_Relative_Class('.', decodeURIComponent(req_url.pathname));
-    let resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(program_path, request_pathobject.join()));
-    if (resolved_request_path.startsWith(NODE_PATH.resolve(program_path)) !== true) {
-      // Core_Console_Log('Resource path outside of program folder.');
+    const resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(resource_dir_path, request_pathobject.join()));
+
+    if (resolved_request_path.startsWith(NODE_PATH.resolve(resource_dir_path)) !== true) {
+      // Core_Console_Log('Requested path outside of resource folder.');
       return RES.NotFound();
     }
+
     if ((await Async_NodePlatform_Path_Is_Directory(resolved_request_path)) === true) {
-      // Core_Console_Log('Resource path is a folder.');
-      return RES.NotFound();
+      return Response.redirect(`${req_url.pathname}${req_url.pathname.endsWith('/') ? '' : '/'}index.html`);
     }
+
     const file = Bun.file(resolved_request_path);
+
     if ((await file.exists()) !== true) {
-      // Core_Console_Log('Resource does not exist.');
+      // Core_Console_Log('Requested path does not exist.');
       return RES.NotFound();
     }
-    if (file.type.startsWith('text/html')) {
-      return HOOK_RES.SetCSP(new Response(file));
-    }
-    return new Response(file);
+
+    return HOOK_RES.SetCSP(new Response(file));
   }
   static async Async_StartServer(port: number) {
     try {
@@ -305,7 +312,6 @@ class HOOK_RES {
     return res;
   }
 }
-
 class RES {
   static NoContent() {
     return new Response('No Content', { status: 204 });

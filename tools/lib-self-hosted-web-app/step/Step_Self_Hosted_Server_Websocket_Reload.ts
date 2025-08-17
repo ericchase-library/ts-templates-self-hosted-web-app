@@ -10,15 +10,14 @@ class Class implements Builder.Step {
   StepName = Step_Self_Hosted_Server_Websocket_Reload.name;
   channel = Logger(this.StepName).newChannel();
 
-  hotreload_enabled = true;
+  reload_enabled = true;
 
   constructor(readonly config: Config) {}
-
   async onStartUp(): Promise<void> {
     NodePlatform_Shell_StdIn_AddListener((bytes, text) => {
       if (text === 'h') {
-        this.hotreload_enabled = !this.hotreload_enabled;
-        if (this.hotreload_enabled === true) {
+        this.reload_enabled = !this.reload_enabled;
+        if (this.reload_enabled === true) {
           this.channel.log("Hot Refresh On    (Press 'h' to toggle.)");
         } else {
           this.channel.log("Hot Refresh Off   (Press 'h' to toggle.)");
@@ -30,9 +29,9 @@ class Class implements Builder.Step {
   async onRun(): Promise<void> {
     if (Builder.GetMode() !== Builder.MODE.DEV) return;
 
-    if (this.hotreload_enabled === true) {
+    if (this.reload_enabled === true) {
       try {
-        await fetch(`http://127.0.0.1:${this.config.server_port}/websockets/reload`, { method: 'POST' });
+        await fetch(`http://127.0.0.1:${this.config.server_port}/api/websockets/reload`, { method: 'POST' });
       } catch (error) {
         this.channel.log(`Server on port ${this.config.server_port} not yet running.`);
       }

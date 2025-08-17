@@ -4,6 +4,8 @@ import { Async_Core_Stream_Uint8_Read_Lines } from '../../../src/lib/ericchase/C
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
 
+export let SELF_HOSTED_SERVER_HOST = '127.0.0.1:8000';
+
 /** An `AfterProcessingSteps` step for running the server. */
 export function Step_Run_Self_Hosted_Server(config: Config): Builder.Step {
   return new Class(config);
@@ -21,7 +23,6 @@ class Class implements Builder.Step {
   }
 
   constructor(readonly config: Config) {}
-
   async onRun(): Promise<void> {
     if (Builder.GetMode() !== Builder.MODE.DEV) return;
 

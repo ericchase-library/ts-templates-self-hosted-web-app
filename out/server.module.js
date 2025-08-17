@@ -158,8 +158,9 @@ function NodePlatform_PathObject_Relative_Win32_Class(...pathlike) {
 }
 
 // src/server.module.ts
-var PREFERRED_PORT = Number.parseInt(process.env.PORT ?? "54321");
 var HOMEPAGE = "/authenticated/index.html";
+var PREFERRED_PORT = Number.parseInt(process.env.PORT ?? "54321");
+Bun.env.PORT = `${PREFERRED_PORT}`;
 
 class SERVER {
   static CreateServer(port) {
@@ -183,10 +184,12 @@ class SERVER {
             return HOOK_RES.Async_CatchInternalServerError(() => HOOK_REQ.Async_AuthenticateAccessToken(req));
           }
         },
-        "/websockets/reload": {
+        "/api/websockets/reload": {
           async POST(req, server2) {
-            server2.publish("ws", "reload");
-            return RES.OK();
+            return HOOK_RES.Async_CatchInternalServerError(() => {
+              server2.publish("ws", "reload");
+              return RES.OK();
+            });
           }
         },
         "/authenticated/*": (req) => {
@@ -196,7 +199,9 @@ class SERVER {
           if (server2.upgrade(req) === true) {
             return;
           }
-          return HOOK_RES.Async_CatchInternalServerError(() => SERVER.Async_GetResource(req));
+          return HOOK_RES.Async_CatchInternalServerError(() => {
+            return SERVER.Async_GetResource(req);
+          });
         }
       },
       fetch() {
@@ -217,23 +222,20 @@ class SERVER {
   }
   static async Async_GetResource(req) {
     const req_url = new URL(req.url);
-    const program_path = NODE_PATH.join(".");
+    const resource_dir_path = NODE_PATH.join(".");
     const request_pathobject = NodePlatform_PathObject_Relative_Class(".", decodeURIComponent(req_url.pathname));
-    let resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(program_path, request_pathobject.join()));
-    if (resolved_request_path.startsWith(NODE_PATH.resolve(program_path)) !== true) {
+    const resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(resource_dir_path, request_pathobject.join()));
+    if (resolved_request_path.startsWith(NODE_PATH.resolve(resource_dir_path)) !== true) {
       return RES.NotFound();
     }
     if (await Async_NodePlatform_Path_Is_Directory(resolved_request_path) === true) {
-      return RES.NotFound();
+      return Response.redirect(`${req_url.pathname}${req_url.pathname.endsWith("/") ? "" : "/"}index.html`);
     }
     const file = Bun.file(resolved_request_path);
     if (await file.exists() !== true) {
       return RES.NotFound();
     }
-    if (file.type.startsWith("text/html")) {
-      return HOOK_RES.SetCSP(new Response(file));
-    }
-    return new Response(file);
+    return HOOK_RES.SetCSP(new Response(file));
   }
   static async Async_StartServer(port) {
     try {
