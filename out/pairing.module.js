@@ -181,11 +181,11 @@ switch ((await Async_VerifyAuthentication()).status) {
     break;
 }
 var div_result = WebPlatform_Node_Reference_Class(document.getElementById("result")).as(HTMLDivElement);
-var form_token = WebPlatform_Node_Reference_Class(document.getElementById("token-form")).as(HTMLFormElement);
-var input_token = WebPlatform_Node_Reference_Class(document.getElementById("token-input")).as(HTMLInputElement);
+var form = WebPlatform_Node_Reference_Class(document.getElementById("form")).as(HTMLFormElement);
+var input_token = WebPlatform_Node_Reference_Class(document.getElementById("token")).as(HTMLInputElement);
 await Async_WebPlatform_DOM_ReadyState_Callback({
   async load() {
-    form_token.addEventListener("submit", async (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       await async_form_submit_handler();
     });
