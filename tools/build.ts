@@ -12,6 +12,9 @@ import { Step_Self_Hosted_Server_Websocket_Reload } from './lib-self-hosted-web-
 
 const SELF_HOSTED_SERVER_PORT = 54321;
 
+// If needed, add `cache` directory to the logger's file writer.
+// await AddLoggerOutputDirectory('cache');
+
 // Use command line arguments to set developer mode.
 if (BunPlatform_Args_Has('--dev')) {
   Builder.SetMode(Builder.MODE.DEV);
