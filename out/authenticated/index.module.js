@@ -1,34 +1,34 @@
 // src/lib/ericchase/Core_Console_Error.ts
 function Core_Console_Error(...items) {
-  console["error"](...items);
+  console['error'](...items);
 }
 
 // src/lib/ericchase/WebPlatform_DOM_ReadyState_Callback.ts
 async function Async_WebPlatform_DOM_ReadyState_Callback(config) {
   async function DOMContentLoaded() {
-    removeEventListener("DOMContentLoaded", DOMContentLoaded);
+    removeEventListener('DOMContentLoaded', DOMContentLoaded);
     await config.DOMContentLoaded?.();
   }
   async function load() {
-    removeEventListener("load", load);
+    removeEventListener('load', load);
     await config.load?.();
   }
   switch (document.readyState) {
-    case "loading":
+    case 'loading':
       if (config.DOMContentLoaded !== undefined) {
-        addEventListener("DOMContentLoaded", DOMContentLoaded);
+        addEventListener('DOMContentLoaded', DOMContentLoaded);
       }
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "interactive":
+    case 'interactive':
       await config.DOMContentLoaded?.();
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "complete":
+    case 'complete':
       await config.DOMContentLoaded?.();
       await config.load?.();
       break;
@@ -86,71 +86,9 @@ function WebPlatform_Node_Reference_Class(node) {
   return new Class_WebPlatform_Node_Reference_Class(node);
 }
 
-// src/lib/server/constants.ts
-var SERVERHOST = CheckENV() ?? CheckCurrentScript() ?? CheckMetaUrl() ?? CheckError() ?? window.location.host;
-function CheckENV() {
-  try {
-    return "127.0.0.1:54321";
-  } catch {}
-}
-function CheckCurrentScript() {
-  try {
-    return new URL(document.currentScript.src).host;
-  } catch {}
-}
-function CheckMetaUrl() {
-  try {
-    return new URL(import.meta.url).host;
-  } catch {}
-}
-function CheckError() {
-  try {
-    return new URL(new Error().fileName).host;
-  } catch {}
-}
-
-// src/lib/server/enable-hot-reload.ts
-var socket = undefined;
-function cleanup() {
-  if (socket) {
-    socket.onclose = () => {};
-    socket.onerror = () => {};
-    socket.onmessage = () => {};
-    socket = undefined;
-  }
-}
-function startup(serverhost) {
-  try {
-    socket = new WebSocket("ws://" + serverhost);
-    if (socket !== undefined) {
-      socket.onclose = () => cleanup();
-      socket.onerror = () => cleanup();
-      socket.onmessage = (event) => {
-        if (event.data === "reload") {
-          socket?.close();
-          setTimeout(() => async_reloadOnServerRestart(serverhost), 100);
-        }
-      };
-    }
-  } catch (error) {
-    Core_Console_Error(error);
-  }
-}
-async function async_reloadOnServerRestart(serverhost) {
-  try {
-    await fetch(serverhost);
-    window.location.reload();
-  } catch {
-    setTimeout(() => async_reloadOnServerRestart(serverhost), 100);
-  }
-}
-function EnableHotReload(serverhost) {
-  startup(serverhost ?? SERVERHOST);
-}
-
 // src/lib/ClientMutex.ts
-var DATABASE_NAME = "ClientMutex";
-var STORE_NAME = "lock";
+var DATABASE_NAME = 'ClientMutex';
+var STORE_NAME = 'lock';
 async function Async_AcquireClientMutex() {
   const database = await new Promise((resolve, reject) => {
     const open_request = indexedDB.open(DATABASE_NAME, 1);
@@ -169,13 +107,13 @@ async function Async_AcquireClientMutex() {
     };
   });
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, "readwrite");
+    const transaction = database.transaction(STORE_NAME, 'readwrite');
     transaction.objectStore(STORE_NAME).put(Date.now(), STORE_NAME);
     transaction.oncomplete = () => {
       return resolve({
         release: () => {
           return new Promise((resolve2, reject2) => {
-            const transaction2 = database.transaction(STORE_NAME, "readwrite");
+            const transaction2 = database.transaction(STORE_NAME, 'readwrite');
             transaction2.objectStore(STORE_NAME).delete(STORE_NAME);
             transaction2.oncomplete = () => {
               return resolve2();
@@ -184,7 +122,7 @@ async function Async_AcquireClientMutex() {
               return reject2(transaction2.error ?? new Error(`Failed to acquire the "${DATABASE_NAME}" lock.`));
             };
           });
-        }
+        },
       });
     };
     transaction.onerror = () => {
@@ -201,29 +139,31 @@ async function Async_MutexFetch(request_fn, response_cb) {
 }
 async function Async_UnpairAllClientsFromServer() {
   return await fetch(`${window.location.origin}/api/authentication/unpair`, {
-    method: "POST"
+    method: 'POST',
   });
 }
 
 // src/authenticated/index.module.ts
-EnableHotReload();
-var button_unpair = WebPlatform_Node_Reference_Class(document.getElementById("unpair")).as(HTMLButtonElement);
+var button_unpair = WebPlatform_Node_Reference_Class(document.getElementById('unpair')).as(HTMLButtonElement);
 await Async_WebPlatform_DOM_ReadyState_Callback({
   async load() {
-    button_unpair.addEventListener("click", async_unpair);
-  }
+    button_unpair.addEventListener('click', async_unpair);
+  },
 });
 async function async_unpair() {
   try {
-    await Async_MutexFetch(() => Async_UnpairAllClientsFromServer(), async (response) => {
-      switch (response.status) {
-        case 200:
-          window.location.href = "/";
-          break;
-        default:
-          Core_Console_Error(await response.text());
-      }
-    });
+    await Async_MutexFetch(
+      () => Async_UnpairAllClientsFromServer(),
+      async (response) => {
+        switch (response.status) {
+          case 200:
+            window.location.href = '/';
+            break;
+          default:
+            Core_Console_Error(await response.text());
+        }
+      },
+    );
   } catch (error) {
     Core_Console_Error(error);
   }

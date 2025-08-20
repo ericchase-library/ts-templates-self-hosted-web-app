@@ -1,6 +1,6 @@
 // src/lib/ClientMutex.ts
-var DATABASE_NAME = "ClientMutex";
-var STORE_NAME = "lock";
+var DATABASE_NAME = 'ClientMutex';
+var STORE_NAME = 'lock';
 async function Async_AcquireClientMutex() {
   const database = await new Promise((resolve, reject) => {
     const open_request = indexedDB.open(DATABASE_NAME, 1);
@@ -19,13 +19,13 @@ async function Async_AcquireClientMutex() {
     };
   });
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, "readwrite");
+    const transaction = database.transaction(STORE_NAME, 'readwrite');
     transaction.objectStore(STORE_NAME).put(Date.now(), STORE_NAME);
     transaction.oncomplete = () => {
       return resolve({
         release: () => {
           return new Promise((resolve2, reject2) => {
-            const transaction2 = database.transaction(STORE_NAME, "readwrite");
+            const transaction2 = database.transaction(STORE_NAME, 'readwrite');
             transaction2.objectStore(STORE_NAME).delete(STORE_NAME);
             transaction2.oncomplete = () => {
               return resolve2();
@@ -34,7 +34,7 @@ async function Async_AcquireClientMutex() {
               return reject2(transaction2.error ?? new Error(`Failed to acquire the "${DATABASE_NAME}" lock.`));
             };
           });
-        }
+        },
       });
     };
     transaction.onerror = () => {
@@ -45,49 +45,49 @@ async function Async_AcquireClientMutex() {
 async function Async_DeleteMutexDatabase() {
   await new Promise((resolve, reject) => {
     const delete_request = indexedDB.deleteDatabase(DATABASE_NAME);
-    delete_request.onsuccess = function() {
+    delete_request.onsuccess = function () {
       resolve();
     };
-    delete_request.onerror = function() {
+    delete_request.onerror = function () {
       reject(delete_request.error);
     };
-    delete_request.onblocked = function() {
-      reject("Deletion blocked.");
+    delete_request.onblocked = function () {
+      reject('Deletion blocked.');
     };
   });
 }
 
 // src/lib/ericchase/Core_Console_Error.ts
 function Core_Console_Error(...items) {
-  console["error"](...items);
+  console['error'](...items);
 }
 
 // src/lib/ericchase/WebPlatform_DOM_ReadyState_Callback.ts
 async function Async_WebPlatform_DOM_ReadyState_Callback(config) {
   async function DOMContentLoaded() {
-    removeEventListener("DOMContentLoaded", DOMContentLoaded);
+    removeEventListener('DOMContentLoaded', DOMContentLoaded);
     await config.DOMContentLoaded?.();
   }
   async function load() {
-    removeEventListener("load", load);
+    removeEventListener('load', load);
     await config.load?.();
   }
   switch (document.readyState) {
-    case "loading":
+    case 'loading':
       if (config.DOMContentLoaded !== undefined) {
-        addEventListener("DOMContentLoaded", DOMContentLoaded);
+        addEventListener('DOMContentLoaded', DOMContentLoaded);
       }
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "interactive":
+    case 'interactive':
       await config.DOMContentLoaded?.();
       if (config.load !== undefined) {
-        addEventListener("load", load);
+        addEventListener('load', load);
       }
       break;
-    case "complete":
+    case 'complete':
       await config.DOMContentLoaded?.();
       await config.load?.();
       break;
@@ -153,26 +153,26 @@ async function Async_MutexFetch(request_fn, response_cb) {
 }
 async function Async_PairClientWithServer({ pairing_token }) {
   return await fetch(`${window.location.origin}/api/authentication/pair`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ pairing_token })
+    body: JSON.stringify({ pairing_token }),
   });
 }
 async function Async_VerifyAuthentication() {
   return await fetch(`${window.location.origin}/api/authentication/verify`, {
-    method: "POST"
+    method: 'POST',
   });
 }
 
 // src/pairing.module.ts
 switch ((await Async_VerifyAuthentication()).status) {
   case 200:
-    window.location.href = "./authenticated/index.html";
+    window.location.href = './authenticated/index.html';
     break;
   default:
-    document.body.classList.remove("hidden");
+    document.body.classList.remove('hidden');
     try {
       await Async_DeleteMutexDatabase();
     } catch (error) {
@@ -180,29 +180,32 @@ switch ((await Async_VerifyAuthentication()).status) {
     }
     break;
 }
-var div_result = WebPlatform_Node_Reference_Class(document.getElementById("result")).as(HTMLDivElement);
-var form = WebPlatform_Node_Reference_Class(document.getElementById("form")).as(HTMLFormElement);
-var input_token = WebPlatform_Node_Reference_Class(document.getElementById("token")).as(HTMLInputElement);
+var div_result = WebPlatform_Node_Reference_Class(document.getElementById('result')).as(HTMLDivElement);
+var form = WebPlatform_Node_Reference_Class(document.getElementById('form')).as(HTMLFormElement);
+var input_token = WebPlatform_Node_Reference_Class(document.getElementById('token')).as(HTMLInputElement);
 await Async_WebPlatform_DOM_ReadyState_Callback({
   async load() {
-    form.addEventListener("submit", async (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       await async_form_submit_handler();
     });
-  }
+  },
 });
 async function async_form_submit_handler() {
   try {
-    await Async_MutexFetch(() => Async_PairClientWithServer({ pairing_token: input_token.value.trim() }), async (response) => {
-      switch (response.status) {
-        case 200:
-          window.location.href = "./authenticated/index.html";
-          break;
-        default:
-          div_result.textContent = await response.text();
-          break;
-      }
-    });
+    await Async_MutexFetch(
+      () => Async_PairClientWithServer({ pairing_token: input_token.value.trim() }),
+      async (response) => {
+        switch (response.status) {
+          case 200:
+            window.location.href = './authenticated/index.html';
+            break;
+          default:
+            div_result.textContent = await response.text();
+            break;
+        }
+      },
+    );
   } catch (error) {
     div_result.textContent = error.message;
   }

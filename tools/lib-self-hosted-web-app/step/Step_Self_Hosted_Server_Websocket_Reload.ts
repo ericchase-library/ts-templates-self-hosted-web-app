@@ -1,10 +1,11 @@
 import { NodePlatform_Shell_StdIn_AddListener } from '../../../src/lib/ericchase/NodePlatform_Shell_StdIn.js';
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
+import { SELF_HOSTED_SERVER_HOST } from './Step_Run_Self_Hosted_Server.js';
 
 /** A `BeforeProcessingSteps` step for performing a websockets reload. */
-export function Step_Self_Hosted_Server_Websocket_Reload(config: Config): Builder.Step {
-  return new Class(config);
+export function Step_Self_Hosted_Server_Websocket_Reload(): Builder.Step {
+  return new Class();
 }
 class Class implements Builder.Step {
   StepName = Step_Self_Hosted_Server_Websocket_Reload.name;
@@ -12,7 +13,7 @@ class Class implements Builder.Step {
 
   reload_enabled = true;
 
-  constructor(readonly config: Config) {}
+  constructor() {}
   async onStartUp(): Promise<void> {
     NodePlatform_Shell_StdIn_AddListener((bytes, text) => {
       if (text === 'h') {
@@ -31,14 +32,10 @@ class Class implements Builder.Step {
 
     if (this.reload_enabled === true) {
       try {
-        await fetch(`http://127.0.0.1:${this.config.server_port}/api/websockets/reload`, { method: 'POST' });
+        await fetch(`http://${SELF_HOSTED_SERVER_HOST}/api/websockets/reload`, { method: 'POST' });
       } catch (error) {
-        this.channel.log(`Server on port ${this.config.server_port} not yet running.`);
+        this.channel.log(`Server not yet running.`);
       }
     }
   }
-}
-interface Config {
-  /** The host string for main server. i.e.: `54321`. */
-  server_port: number;
 }

@@ -4,11 +4,11 @@ import { Async_Core_Stream_Uint8_Read_Lines } from '../../../src/lib/ericchase/C
 import { Builder } from '../../core/Builder.js';
 import { Logger } from '../../core/Logger.js';
 
-export let SELF_HOSTED_SERVER_HOST = '127.0.0.1:8000';
+export let SELF_HOSTED_SERVER_HOST = '127.0.0.1:54321';
 
 /** An `AfterProcessingSteps` step for running the server. */
-export function Step_Run_Self_Hosted_Server(config: Config): Builder.Step {
-  return new Class(config);
+export function Step_Run_Self_Hosted_Server(): Builder.Step {
+  return new Class();
 }
 class Class implements Builder.Step {
   StepName = Step_Run_Self_Hosted_Server.name;
@@ -22,7 +22,7 @@ class Class implements Builder.Step {
     }
   }
 
-  constructor(readonly config: Config) {}
+  constructor() {}
   async onRun(): Promise<void> {
     if (Builder.GetMode() !== Builder.MODE.DEV) return;
 
@@ -37,6 +37,7 @@ class Class implements Builder.Step {
     const [stdout, stdout_tee] = p0.stdout.tee();
     await Async_Core_Stream_Uint8_Read_Lines(stdout_tee, (line) => {
       if (line.startsWith('Serving at')) {
+        SELF_HOSTED_SERVER_HOST = new URL(line.slice('Serving at'.length).trim()).host;
         return false;
       }
     });
@@ -47,8 +48,4 @@ class Class implements Builder.Step {
   async onCleanUp(): Promise<void> {
     await this.async_killServer();
   }
-}
-interface Config {
-  /** The host string for main server. i.e.: `54321`. */
-  server_port: number;
 }
