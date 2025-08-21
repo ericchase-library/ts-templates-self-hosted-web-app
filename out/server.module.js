@@ -159,6 +159,21 @@ function NodePlatform_PathObject_Relative_Win32_Class(...pathlike) {
 
 // src/server.module.ts
 var HOMEPAGE = '/authenticated/index.html';
+var CSP_DIRECTIVES = {
+  'default-src': 'none',
+  'script-src': 'self',
+  'style-src': 'self',
+  'img-src': 'self',
+  'font-src': 'self',
+  'connect-src': 'self',
+  'media-src': 'self',
+  'worker-src': 'self',
+  'manifest-src': 'self',
+  'form-action': 'self',
+  'object-src': 'none',
+  'base-uri': 'none',
+  'frame-ancestors': 'none',
+};
 var PREFERRED_PORT = Number.parseInt(process.env.PORT ?? '54321');
 Bun.env.PORT = `${PREFERRED_PORT}`;
 
@@ -437,9 +452,15 @@ class HOOK_RES {
     res.headers.append('Pragma', 'no-cache');
     return res;
   }
+  static CSP = '';
   static SetCSP(res) {
-    res.headers.append('Content-Security-Policy', "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none';");
+    res.headers.append('Content-Security-Policy', HOOK_RES.CSP);
     return res;
+  }
+  static {
+    for (const [key, value] of Object.entries(CSP_DIRECTIVES)) {
+      HOOK_RES.CSP += `${key} '${value}'; `;
+    }
   }
 }
 
