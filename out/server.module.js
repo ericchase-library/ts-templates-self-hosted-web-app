@@ -243,7 +243,7 @@ class SERVER {
   }
   static async Async_GetResource(req) {
     const req_url = new URL(req.url);
-    const resource_dir_path = NODE_PATH.join('.');
+    const resource_dir_path = NODE_PATH.join(import.meta.dir);
     const request_pathobject = NodePlatform_PathObject_Relative_Class('.', decodeURIComponent(req_url.pathname));
     const resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(resource_dir_path, request_pathobject.join()));
     if (resolved_request_path.startsWith(NODE_PATH.resolve(resource_dir_path)) !== true) {

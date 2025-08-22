@@ -104,7 +104,8 @@ class SERVER {
     const req_url = new URL(req.url);
     // Core_Console_Log(`${req.method}      ${req_url.pathname}`);
 
-    const resource_dir_path = NODE_PATH.join('.');
+    const resource_dir_path = NODE_PATH.join(import.meta.dir);
+    // Note: the '.' here is necessary, because pathnames start with '/'
     const request_pathobject = NodePlatform_PathObject_Relative_Class('.', decodeURIComponent(req_url.pathname));
     const resolved_request_path = NODE_PATH.resolve(NODE_PATH.join(resource_dir_path, request_pathobject.join()));
 

@@ -1,4 +1,5 @@
 import { Async_AcquireClientMutex } from './ClientMutex.js';
+import { Core_Console_Error } from './ericchase/Core_Console_Error.js';
 
 export interface PairRequestBody {
   pairing_token: string;
@@ -34,4 +35,24 @@ export async function Async_VerifyAuthentication(): Promise<Response> {
   return await fetch(`${window.location.origin}/api/authentication/verify`, {
     method: 'POST',
   });
+}
+
+export async function Async_UnpairAndReload() {
+  try {
+    await Async_MutexFetch(
+      () => Async_UnpairAllClientsFromServer(),
+      async (response) => {
+        switch (response.status) {
+          case 200:
+            window.location.reload();
+            break;
+          default:
+            Core_Console_Error(await response.text());
+            break;
+        }
+      },
+    );
+  } catch (error: any) {
+    Core_Console_Error(error);
+  }
 }
