@@ -62,10 +62,10 @@ Builder.SetProcessorModules(
   // Process the HTML custom components.
   Processor_HTML_Custom_Component_Processor(),
   // Bundle the server.
-  Processor_TypeScript_Generic_Bundler({ target: 'bun' }, { include_patterns: ['server.module.ts'], bundler_mode: 'module' }),
+  Processor_TypeScript_Generic_Bundler({ target: 'bun' }, { bundler_mode: 'module', include_patterns: ['server.module.ts'] }),
   // Bundle the IIFE scripts and module scripts.
   Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'iife' }),
-  Processor_TypeScript_Generic_Bundler({}, { exclude_patterns: ['server.module.ts'], bundler_mode: 'module' }),
+  Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'module', exclude_patterns: ['server.module.ts'] }),
   // Write non-bundle files and non-library files.
   Processor_Set_Writable({ include_patterns: ['**'] }),
   //
