@@ -67,7 +67,7 @@ Builder.SetProcessorModules(
   Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'iife' }),
   Processor_TypeScript_Generic_Bundler({}, { bundler_mode: 'module', exclude_patterns: ['server.module.ts'] }),
   // Write non-bundle files and non-library files.
-  Processor_Set_Writable({ include_patterns: ['**'] }),
+  Processor_Set_Writable({ include_patterns: ['**/*{.css,.html,.ico,.env}'], value: true }),
   //
 );
 
