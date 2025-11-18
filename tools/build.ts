@@ -24,7 +24,7 @@ Builder.SetVerbosity(Builder.VERBOSITY._1_LOG);
 // These steps are run during the startup phase only.
 Builder.SetStartUpSteps(
   Step_Dev_Project_Update_Config({ project_dir: '.' }),
-  Step_Bun_Run({ cmd: ['bun', 'update', '--latest'], showlogs: false }),
+  Step_Bun_Run({ cmd: ['bun', 'update'], showlogs: false }),
   Step_Bun_Run({ cmd: ['bun', 'install'], showlogs: false }),
   //
 );
